@@ -10,10 +10,11 @@ def calculate_total(cards)
       total += 10
     else total += value.to_i
     end
-        if arr.include?("Ace") && total > 21
-          total -= 10
-          end
-        end
+  end
+        arr.select{|e| e == "Ace"}.count.times do
+    total -= 10 if total > 21
+  end
+        
   
   total
 
@@ -21,8 +22,10 @@ end
 puts "Welcome to BlackJack!"
 
 puts "what is your name?"
-
 p1name = gets.chomp
+
+puts " ====== Dealing Cards ======"
+puts ""
 
 cards = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King','Ace']
 
@@ -56,36 +59,92 @@ puts "Dealer has: #{dealercards[0]} and #{dealercards[1]} for a total of #{deale
 puts p1name + " has: #{playercards[0]} and #{playercards[1]} for a total of #{p1total}"
 puts ""
 
-if p1total == 21
-  puts "You have BlackJack!!"
-elsif p1total < 21
-  puts "What would you like to do? 1) Hit 2) Stay"
-hs = gets.chomp
+if p1total == 21 
+  puts "You have BlackJack... YOU WIN!"
+  exit
 end
 
-if hs == '1'
-    playercards << deck.pop
-    p1total = calculate_total(playercards)
-    puts "You got delt a #{playercards[2]} You now have #{p1total}"
+  while p1total < 21 
+    puts "What would you like to do? 1.) hit 2.) stay"
+    hit_or_stay = gets.chomp
 
-end
+     if !['1', '2'].include?(hit_or_stay)
+    puts "Error: Please Enter 1 or 2"
+      next
+    end
+    
+    if hit_or_stay == '2'
+      puts "You chose to stay with a total of #{p1total}.. Dealer will now try to beat you"
+    break
+  end
 
-if p1total > 21
-    puts "you busted!"
-  puts ""
-  puts "-------Dealer Wins--------"
-end
-
-if hs == '2'
+new_card = deck.pop
+  puts "dealing to player... You got: #{new_card}"
+  playercards << new_card
   p1total = calculate_total(playercards)
-  puts "You stayed with a total of #{p1total}"
+  puts "Your total is now: #{p1total}"
+
+   if p1total > 21 
+      puts "Oops, sorry you busted with a total of #{p1total}"
+      puts "====== Dealer Wins! ======"
+      exit
+    
+    elsif p1total == 21
+      puts "You have BlackJack You win!"   
+      exit 
+    end
 end
 
-while dealertotal <= 21
-  dealercards = deck.pop
-dealertotal = calculate_total(dealercards)
-break
-end 
+if dealertotal == 21
+  puts "Sorry dealer has BlackJack you lose!"
+  exit
+end
+
+while dealertotal < 17
+  new_dealer_card = deck.pop
+  puts "Dealer recieved a #{new_dealer_card}"
+  dealercards << new_dealer_card
+  dealertotal = calculate_total(dealercards)
+  puts "The dealer now has #{dealertotal}"
+
+  if dealertotal == 21
+    puts "Sorry, dealer has BlackJack... You lose!"
+    exit
+  elsif dealertotal > 21
+    puts "Dealer busted... YOU WIN!"
+    exit
+  end
+end
+
+#compare hands between dealer & player
+
+puts "Dealer cards are: "
+dealercards.each do |card|
+  puts "#{card}"
+end
+puts "--And a total of #{dealertotal}--"
+puts ""
+
+puts "#{p1name} cards are:"
+playercards.each do |card|
+  puts "#{card}"
+end
+ puts "--And a total of #{p1total}--"
+
+if dealertotal > p1total
+  puts "Sorry, but dealer wins!"
+
+elsif dealertotal < p1total
+  puts "Congrats!! You won!"
+
+else 
+  puts "Looks like a tie!"
+end
+
+exit
+
+
+
 
 
 
